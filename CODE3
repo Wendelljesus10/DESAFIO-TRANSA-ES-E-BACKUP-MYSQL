@@ -1,0 +1,21 @@
+CODE 3
+PARTE 3 – BACKUP E RECOVERY 
+
+Objetivo: 
+Neste etapa do desafio, você irá executar o backup do banco de dados e-commerce. Realize o backup e recovery do banco de dados; 
+Utilize o mysqdump para realizar o backup e recovery do banco de dados e-commerce; 
+Realize o backup de diferentes bancos de dados e inseria os recursos como: procedures, eventos e outros. 
+Adicione o arquivo de backup ao github juntamente com o script; 
+
+
+C:\WINDOWS\system32>cd C:\Program Files\MySQL\MySql Server 8.3\bin\ -- ENTRANDO NA PASTA MYSQL
+  
+C:\Program Files\MySQL\MySQL Server 8.3\bin>mysql --user root --password < desafio1_backup.sql
+ -- CRIANDO O PRIMEIRO BACKUP
+
+C:\Program Files\MySQL\MySQL Server 8.3\bin>mysqldump --triggers --routines -u root -p desafio1 > desafio1backup3.sql
+    -- CRIANDO RECOVERY ONDE SE TEM AS TRIGGERS E AS ROUTIES DO NOSSO ECOMMERCE
+
+C:\Program Files\MySQL\MySQL Server 8.3\bin>mysqldump --no-data -u root -p desafio1 > desafio1_backup_nodata.sql
+C:\Program Files\MySQL\MySQL Server 8.3\bin>mysqldump --no-create-info -u root -p desafio1 > desafio1_backup_noinfo.sql
+  -- DOIS RECOVERES CRIADOS PARA SEPARAR OS DADOS, CRIAÇÃO APENAS DE TABELAS (NO-DATA) E APENAS AS INSERÇÕES E AFINS (NO-INFO)
