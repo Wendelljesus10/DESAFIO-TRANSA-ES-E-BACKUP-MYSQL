@@ -1,0 +1,24 @@
+CODE 1
+
+Essa primeira transação pode ser executada sem utilizar outros recursos como procedures. 
+Dessa forma, você irá executar statements de consultas e modificações de dados persistidos no banco de dados via transações.  
+
+use desafio1;
+SET @@autocommit = off; 
+
+-- iniciando transação, onde id de tabela Pessoa Física, acrescenta +1 a cada inserção --
+start transaction;
+select @pfisica_id:=max(pfisica_id)+1
+from pessoafisica;
+
+-- comando de adição de um novo cliente --
+insert into pessoafisica 
+(CPF,RG,fname,lname,sexo,rua,bairro,cidade,numero_end,telefone)
+values (123456789,12345672,'Julian','Alvarez','Masculino','Rua Leite','Carolina','Bauru',719,14998509496);
+
+-- comando de mudança de nome do cliente adicionado acima --
+
+update pessoafisica set fname = 'Ronaldo' where pfisica_id = 11;
+commit; -- salvando a alteração
+
+
