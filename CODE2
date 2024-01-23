@@ -1,0 +1,60 @@
+CODE 2
+PARTE 2 - TRANSAÇÃO COM PROCEDURE 
+
+Você deverá criar outra transação, contudo, esta será definida dentro de uma procedure. 
+Neste caso, assim como no exemplo em aula, deverá haver uma verificação de erro. 
+Essa verificação irá acarretar um ROLLBACK, total ou parcial (SAVEPOINT). 
+
+
+-- PROCEDURE ONDE É CRIADO UM DECLARE, CASO DE ALGUM PROBLEMA DURANTE A EXECUÇÃO DESSE COMANDO, ELE NÃO SALVA TERMINA A AÇÃO (ROLLBACK) E VOLTA DANDO O AVISO DO ERRO. 
+CASO NÃO TENHA ERRO, ELA SEGUE E COMEÇA A TRANSAÇÃO DE UM VISÃO DE TOTAL DE PEDIDOS. --
+
+delimiter \\
+create procedure fail()
+begin
+DECLARE EXIT HANDLER FOR sqlexception
+	BEGIN
+		        select 'Erro durante a transação' AS Resultado;
+                ROLLBACK;
+	END;
+    START TRANSACTION;
+select pf.fname as NOME, count(clienteped_id) as TOTAL_PEDIDOS from pessoafisica pf
+				inner join cadastroc c ON c.pfisica_id = pf.pfisica_id
+                inner join pedidos p on p.clienteped_id = c.cliente_id
+		group by clienteped_id; 
+
+end \\
+delimiter ;
+commit; -- salvando
+
+-- PROCEDUTE ONDE CRIA-SE UM INSERT, QUE AO SER CHAMADO DA 3 AVISO AO USUÁRIO
+1 - SE TUDO ESTIVER OK , ELE COMEÇA A TRANSAÇÃO E INSERE O PRODUTO EM QUESTÃO E COMMITA.
+2 - SE O PRODUTO JÁ FOI INSERIDO, ELE DÁ O AVISO DE PRODUTO INSERIDO E COMMITA.
+3 - SE POR ALGUM PROBLEMA A NÃO SER O DE CIMA, O PROCESSO DA COMO ERRO E DA ROLLBACK.
+
+delimiter \\
+create procedure insert_procedure(
+in produto_id_p int,
+in nome_p varchar(50),
+in categoria_p enum('Vestuário','Tênis','Acessório'),
+in tamanho_p varchar(5),
+in valor_p float,
+in descricão_p varchar(80)
+)
+begin 
+	DECLARE EXIT HANDLER FOR sqlexception
+begin
+        select 'Erro durante a transação' AS Resultado;
+        rollback;
+	END;
+    start transaction;
+if (produto_id_p > 13) then
+insert into produto (produto_id,nome,categoria,tamanho,valor,descrição) values (produto_id_p,nome_p,categoria_p,tamanho_p,valor_p,descricão_p);
+select 'Produto inserido' as Message;
+select * from produto;
+else
+select 'Já inserido' as Message;
+end if;
+commit;
+end \\
+delimiter ;
